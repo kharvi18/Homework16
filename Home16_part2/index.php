@@ -1,65 +1,71 @@
 <?php
-$dbname = "home16_part2";
-$conn = new Mysqli($servername, $username, $password, $dbname);
+header('Content-Type: text/html; charset=utf-8');
+$servername = "localhost";
+$username = "admin";
+$password = "";
+$dbname = "home16";
+
+
+$conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
-die("Connection failed: " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
 }
-//first query
-echo "1. Get all blocks from block table where theme is bartik and module is system" . "<br>";
-$sql="SELECT * FROM `block`
-WHERE block.theme LIKE 'bartik' AND block.module LIKE 'system'
-ORDER BY block.bid";
-$result = $conn->query($sql);;
-if ($result->num_rows > 0) {
-while ($row = $result->fetch_assoc()) {
-echo $row["bid"]. ", ". $row["module"]. ", " . $row["delta"] .  ", " . $row["theme"]  .  ", " . $row["status"]  .  ", " . $row["weight"]  .  ", " . $row["region"]  .  ", " . $row["custom"]  .  ", " . $row["visibility"]  .  ", " . $row["title"]  .  ", " . $row["cache"] ;
-}
-"<br>";
-}
-} else {
-echo "0 results";
-}
+//query1
+echo "1 запрос";
 echo "<br>";
-//second task
-echo "2. Get nodes where type is delivery and all that made in october and title begins with 8046" . "<br>";
-$sql = "SELECT title, type, created FROM `node` WHERE type = 'delivery' AND title LIKE '8046%' AND created BETWEEN 1538352000 AND 1541030399";
-$result = $conn->query($sql);;
+$sql = "SELECT bid, module, delta FROM block WHERE theme LIKE 'bartik' AND module LIKE 'system'";
+$result = $conn->query($sql);
 if ($result->num_rows > 0) {
-while ($row = $result->fetch_assoc()) {
-echo " • Title " . $row["title"] . " • Type " . $row["type"] . " • Created " . $row["created"] . "<br>";
-}
+    // output data of each row
+    while($row = $result->fetch_assoc()) {
+        echo "bid: " . $row["bid"]. " | module: " . $row["module"]. " | delta: " . $row["delta"]. "<br>";
+    }
 } else {
-echo "0 results";
+    echo "0 results";
 }
+//query2
 echo "<br>";
-//third task
-echo "3. Get user name and nodes that where published by user 'serhiy'(output username and email with each node). get last 20 nodes." . "<br>";
-$sql = "SELECT node.nid, node.title, users.name, users.mail
-FROM node
-LEFT JOIN users ON node.uid = users.uid
-WHERE users.uid = 3
-ORDER BY node.created DESC
-LIMIT 20";
-$result = $conn->query($sql);;
+echo "2 запрос";
+echo "<br>";
+$sql = "SELECT entity_type, bundle, field_date_value  FROM `field_data_field_date` WHERE field_data_field_date.field_date_value= '2018-06-18T00:00:00' AND field_data_field_date.bundle= 'delivery' AND field_data_field_date.entity_id>8
+";
+$result = $conn->query($sql);
 if ($result->num_rows > 0) {
-while ($row = $result->fetch_assoc()) {
-echo " • Node ID " . $row["nid"] . " • Node title " . $row["title"] . " • User name " . $row["name"] . " • User mail " . $row["mail"] . "<br>";
-}
+    // output data of each row
+    while($row = $result->fetch_assoc()) {
+        echo "entity_type: " . $row["entity_type"]. " | bundle: " . $row["bundle"]. " | field_date_value: " . $row["field_date_value"]. "<br>";
+    }
 } else {
-echo "0 results";
+    echo "0 results";
 }
+//query3
 echo "<br>";
-//fourth task
-echo "4. Get all variable name that has cache word(cache_akjsgdkjag) but not (cache)(see variable table)" . "<br>";
-$sql = "SELECT DISTINCT name FROM `variable` WHERE `name` LIKE 'cache!_%' ESCAPE '!'";
-$result = $conn->query($sql);;
+echo "3 запрос";
+echo "<br>";
+$sql = "SELECT entity_type, bundle, field_driver_value FROM `field_data_field_driver` WHERE bundle = 'cars' and field_driver_value LIKE '%Сергей%'";
+$result = $conn->query($sql);
 if ($result->num_rows > 0) {
-while ($row = $result->fetch_assoc()) {
-echo " • Name variable " . $row["name"] . "<br>";
-}
+    // output data of each row
+    while($row = $result->fetch_assoc()) {
+        echo "entity_type: " . $row["entity_type"]. " | bundle: " . $row["bundle"]. " | field_driver_value: " . $row["field_driver_value"]. "<br>";
+    }
 } else {
-echo "0 results";
+    echo "0 results";
 }
+
+//query4
 echo "<br>";
+echo "4 запрос";
+echo "<br>";
+$sql = "SHOW tables like 'cache%'";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    // output data of each row
+    while($row = $result->fetch_assoc()) {
+        echo "tables: " . $row["Tables_in_test (cache%)"] . "<br>";
+    }
+} else {
+    echo "0 results";
+}
 $conn->close();
 ?>
