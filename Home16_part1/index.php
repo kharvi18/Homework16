@@ -114,6 +114,8 @@ if (isset($_POST)) {
         </tr>
     </table>
 </form>
-
+    
+<script src="assets/js/libs.js"></script>
+<script src="assets/js/main.js"></script>
 </body>
 </html>
