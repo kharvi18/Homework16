@@ -1,40 +1,42 @@
-<?php
-if (!empty($_POST["register-user"])) {
+<?php require('connection.php');
 //Check form input validation
-    foreach ($_POST as $key => $value) {
-        if (empty($_POST[$key])) {
-            $error_message = "All Fields are empty";
-            break;
-        }
+if (!empty($_POST["register-user"])) {
+foreach ($_POST as $key => $value) {
+    if (empty($_POST[$key])) {
+        $error_message = "All Fields are required";
+        break;
     }
 }
-
+}
 //Check password validation
 if ($_POST['password'] != $_POST['confirm_password']) {
     $error_message = 'Passwords should be same<br>';
 }
-
 // Email Validation
 if (!isset($error_message)) {
     if (!filter_var($_POST["userEmail"], FILTER_VALIDATE_EMAIL)) {
         $error_message = "Invalid Email Address";
     }
 }
-
 //Check if gender is selected
 if (!isset($error_message)) {
     if (!isset($_POST["gender"])) {
         $error_message = " All Fields are required";
     }
 }
-
 //Add user data to database
-if (!isset($error_message)) {
-    require_once("database.php");
-    $db_handle = new DBController();
-    $query = "INSERT INTO registered_users (user_name, first_name, last_name, password, email, age, gender) VALUES
-		('" . $_POST["userName"] . "', '" . $_POST["firstName"] . "', '" . $_POST["lastName"] . "', '" . md5($_POST["password"]) . "', '" . $_POST["userEmail"] . "', '" . $_POST["userAge"] . "','" . $_POST["gender"] . "')";
-    $result = $db_handle->insertQuery($query);
+if (isset($_POST)) {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $userPassword = md5($_POST['userPassword']);
+    $firstName = $_POST['firstName'];
+    $lastName = $_POST['lastName'];
+    $age = $_POST['userAge'];
+    $gender = $_POST['gender'];
+    $sql = "INSERT INTO users (username, email, password, firstName, lastName, age, gender) 
+                  VALUES('$username', '$email', '$userPassword', '$firstName', '$lastName', 
+                  '$age', '$gender')";
+    $result = $conn->query($sql);
     if (!empty($result)) {
         $error_message = "";
         $success_message = "You have registered successfully!";
@@ -44,7 +46,6 @@ if (!isset($error_message)) {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,7 +107,7 @@ if (!isset($error_message)) {
             </td>
         </tr>
         <tr>
-            <td colspan=2>
+            <td>
                 <input type="submit" name="register-user"
                        value="Submit"
                        class="btnRegister"></td>
